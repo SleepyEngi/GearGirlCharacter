@@ -15,11 +15,6 @@ local CHAR_NAME = GG.char_name
 local mod_list = {
   -- Not yet available on the modportal!
   ["CharSelect"] = "0.18.1",
-  -- Available and known to work
-  ["minime"] = "0.0.14",
-  -- Current version (0.0.3) still depends on Gear Girl replacing the default
-  -- character -- I hope this will be fixed in 0.0.4!
-  ["RitnCharacters"] = "0.0.4",
 }
 
 GG.dwrite("mod_list: " .. serpent.block(mod_list))
@@ -126,44 +121,12 @@ for name, version in pairs(mod_list) do
 end
 
 -- This game doesn't support multiple characters -- overwrite the base character!
-local char = data.raw["character"]
-local corpse = data.raw["character-corpse"]
-local base_name, name, c
+if replace_base_char then
+  GG.dwrite(string.format("Stand-alone mode: Overwriting vanilla \"character\" with \"%s\"", CHAR_NAME))
 
-for e, entities in ipairs({char, corpse}) do
-  if entities == char then
-    base_name = "character"
-    name = CHAR_NAME
-    c = true
-  else
-    base_name = "character-corpse"
-    name = CHAR_NAME .. "-corpse"
-    c = false
-  end
-
-  -- Overwrite base character/corpse
+  -- Overwrite base character (corpse is already set on the GG character prototype)
   -- ("character-corpse" is already set as new character_corpse, so there's nothing to do!)
-  if replace_base_char then
-    GG.dwrite(string.format("Stand-alone mode: Overwriting vanilla \"%s\" with \"%s\"",
-                              entities[name].type, name))
-    entities[base_name] = entities[name]
-    entities[base_name].name = base_name
-    entities[name] = nil
-
-  -- Keep base character/corpse
-  else
-    GG.dwrite(string.format("Keeping both vanilla \"%s\" and \"%s\"!", entities[name].type, name))
-
-    -- Localise new character/corpse
-    entities[name].localised_name = {"entity-name." .. name}
-    entities[name].localised_description = {"entity-description." .. name}
-    GG.dwrite(string.format("Added localization for \"%s\"!", name))
-
-    -- Make sure the Gear Girl won't have the default character's corpse!
-    if c then
-      entities[name].character_corpse = name .. "-corpse"
-      GG.dwrite(string.format("Activated new corpse for \"%s\": \"%s\"!",
-                                name, entities[name].character_corpse))
-    end
-  end
+  data.raw.character.character = data.raw.character[CHAR_NAME]
+  data.raw.character.character.name = "character"
+  data.raw.character[CHAR_NAME] = nil
 end

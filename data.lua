@@ -1,5 +1,5 @@
 -- Make character and corpse
-require("prototypes.girl_character_animations")
+require("prototypes.phase1.girl_character_animations")
 
 ------------------------------------------------------------------------------------
 -- Create table for other character-selector mods to register with Gear Girl.
